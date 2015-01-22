@@ -1,3 +1,5 @@
+## -*- coding: utf-8 -*-
+
 import maya.cmds as cmds
 def smoothKeys(NumberOfTimes):
     def smoothFunc(val,Strength):
@@ -7,7 +9,6 @@ def smoothKeys(NumberOfTimes):
                 val[1] = average
             Strength -= 1
         return average
-    #smoothFunc([5,10,2],5)
     
     #アニメーションカーブの名前を変数に格納
     AnimCurves = cmds.keyframe(q=1,name=1)
@@ -72,4 +73,15 @@ def smoothKeys(NumberOfTimes):
             i += 1
         #複製したカーブの削除
         cmds.delete(DupCurve)
-smoothKeys(1)
+#smoothKeys(1)
+
+#UI作成
+width = 175
+if cmds.window("smKeysWindow",ex=1) == True:
+    cmds.deleteUI("smKeysWindow")
+cmds.window("smKeysWindow",w=width,sizeable=0)
+cmds.columnLayout()
+cmds.text("smooth Value\n※処理重いのでご注意")
+cmds.intField("smKeysValue",v=1,w=width)
+cmds.button(c="smoothKeys(cmds.intField(\"smKeysValue\",q=1,v=1))",l="run",w=width)
+cmds.showWindow("smKeysWindow")
