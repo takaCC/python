@@ -1,0 +1,58 @@
+## -*- coding: utf-8 -*-
+import maya.cmds as cmds
+import math
+
+def Gaussfunc(inputValue,standardDeviation,average):
+
+    #変数の初期化
+    maxValue = max(inputValue)
+    minValue = min(inputValue)
+    gaussWeight = []
+    gaussWeightMax = 0
+    RemapValue = 0
+    ReverseValue = []
+    ReverseValueMax = 0
+    WeightValue = 0
+    GaussValue = []
+    for value in inputValue:
+        #gauss.append(1/(math.sqrt(2*math.pi)*standardDeviation)*math.exp((-1)*(value-maxValue-average)^2/(2*standardDeviation^2)))
+        #print 1/(math.sqrt(2*math.pi)*standardDeviation)*math.exp((-1)*math.pow((value-maxValue-average),2)/(2*math.pow(standardDeviation,2)))
+        gaussWeight.append(1/(math.sqrt(2*math.pi)*standardDeviation)*math.exp((-1)*math.pow((value-maxValue-average),2)/(2*math.pow(standardDeviation,2))))
+    gaussWeightMax = max(gaussWeight)
+    for value in gaussWeight:
+        RemapValue = float(value)/gaussWeightMax
+        ReverseValue.append(abs(RemapValue-1))
+    ReverseValueMax = max(ReverseValue)
+    i = 0
+    while i < len(inputValue):
+        WeightValue = float(ReverseValue[i])/ReverseValueMax
+        GaussValue.append((1-WeightValue)*(maxValue-minValue)+minValue)
+        i += 1
+    return GaussValue
+
+def GaussKeys(standardDeviation,average):
+    values = []
+    AnimCurves = cmds.keyframe(q=1,name=1)
+    for AnimCurve in AnimCurves:
+        FrameNum = cmds.keyframe(AnimCurve,q=1,sl=1)
+        i = 0
+        while i < len(FrameNum):
+            values.append(cmds.keyframe(AnimCurve,q=1,vc=1,t=(FrameNum[i],FrameNum[i]))[0])
+            i += 1
+        replaceValues = Gaussfunc(values,standardDeviation,average)
+        i = 0
+        while i < len(FrameNum):
+            cmds.keyframe(AnimCurve,vc=replaceValues[i],t=(FrameNum[i],FrameNum[i]))
+            i += 1
+
+width = 250
+if cmds.window("gaussValue",ex=1):
+    cmds.deleteUI("gaussValue")
+cmds.window("gaussValue",w=wedth)
+cmds.columnLayout()
+cmds.text("standardDeviation")
+cmds.floatField("standardDeviationValue",w=width,v=10)
+cmds.text("average")
+cmds.floatField("averageValue",w=width,v=10)
+cmds.iconTextButton(c="GaussKeys(cmds.floatField(\"standardDeviationValue\",q=1,v=1),cmds.floatField(\"averageValue\",q=1,v=1))",style="textOnly",w=wedth,l="run",rpt=1)
+cmds.showWindow("gaussValue")
