@@ -1,6 +1,8 @@
 def smoothFunc(val,Strength):
     while Strength:
         average = (val[0]+val[1]+val[2])/3
+        print average
         if Strength > 1:
             val[1] = average
         Strength -= 1
+    return average
