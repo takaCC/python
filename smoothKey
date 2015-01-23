@@ -1,6 +1,8 @@
 ## -*- coding: utf-8 -*-
 
 import maya.cmds as cmds
+import math
+
 def smoothKeys(NumberOfTimes):
     def smoothFunc(val,Strength):
         while Strength:
@@ -25,6 +27,21 @@ def smoothKeys(NumberOfTimes):
     ArraySize = 0
     DupCurve = ""
     DupCurveVal = 0
+    global SmoothKeys_ProgressAmount
+    SmoothKeys_ProgressAmount = 0.0
+    ProgressUnitData = float(100)/(len(AnimCurves)*NumberOfTimes)
+    ProgressUnit = round(ProgressUnitData,1)
+    if ProgressUnit < 0.1:
+        ProgressUnit = 0.1
+    MaxProgress = ProgressUnit*len(AnimCurves)*NumberOfTimes
+    print "progressUnit:"+str(ProgressUnit)
+    
+    #プログレスウィンドウの作成
+    cmds.progressWindow(    title='Doing Processing',
+                                        progress=SmoothKeys_ProgressAmount,
+                                        status='Progress: 0%',
+                                        isInterruptable=True,
+                                        max = MaxProgress)
     
     #取得したアニメーションカーブ全てをループ処理
     for AnimCurve in AnimCurves:
@@ -61,6 +78,15 @@ def smoothKeys(NumberOfTimes):
                 i += 1
             #カウント番号のカウントアップ
             count += 1
+            #progress windowの更新
+            SmoothKeys_ProgressAmount += ProgressUnit
+            cmds.progressWindow( edit=True, progress=SmoothKeys_ProgressAmount, status=('progress: ' + str(SmoothKeys_ProgressAmount/MaxProgress*100) + '%' ) )
+            #esc押してれば処理を中断
+            if cmds.progressWindow( query=True, isCancelled=True ) :
+                break
+        #esc押してれば処理を中断
+        if cmds.progressWindow( query=True, isCancelled=True ) :
+            break
         #インデント番号の初期化
         i = 0
         #複製してスムースしたあとのカーブの各キーの値を、既存のキーの値を置き換える
@@ -73,6 +99,8 @@ def smoothKeys(NumberOfTimes):
             i += 1
         #複製したカーブの削除
         cmds.delete(DupCurve)
+    #progress windowの削除
+    cmds.progressWindow(endProgress=1)
 #smoothKeys(1)
 
 #UI作成
@@ -81,7 +109,7 @@ if cmds.window("smKeysWindow",ex=1) == True:
     cmds.deleteUI("smKeysWindow")
 cmds.window("smKeysWindow",w=width,sizeable=0)
 cmds.columnLayout()
-cmds.text("smooth Value\n※処理重いのでご注意")
+cmds.text("smooth Value\n※処理重いのでご注意)")
 cmds.intField("smKeysValue",v=1,w=width)
-cmds.iconTextButton(flat=0,style="iconAndTextHorizontal",c="smoothKeys(cmds.intField(\"smKeysValue\",q=1,v=1))",l="run",w=width,commandRepeatable=1)
+cmds.iconTextButton(annotation="単体なら10~20\n複数のアニメーションカーブなら5ぐらいまでの値が安全です\nそれ以上は結構固まるかと(ただ処理はちゃんと行っています",flat=0,style="textOnly",c="smoothKeys(cmds.intField(\"smKeysValue\",q=1,v=1))",l="Run",w=width,commandRepeatable=1)
 cmds.showWindow("smKeysWindow")
