@@ -15,8 +15,6 @@ def Gaussfunc(inputValue,standardDeviation,average):
     WeightValue = 0
     GaussValue = []
     for value in inputValue:
-        #gauss.append(1/(math.sqrt(2*math.pi)*standardDeviation)*math.exp((-1)*(value-maxValue-average)^2/(2*standardDeviation^2)))
-        #print 1/(math.sqrt(2*math.pi)*standardDeviation)*math.exp((-1)*math.pow((value-maxValue-average),2)/(2*math.pow(standardDeviation,2)))
         gaussWeight.append(1/(math.sqrt(2*math.pi)*standardDeviation)*math.exp((-1)*math.pow((value-maxValue-average),2)/(2*math.pow(standardDeviation,2))))
     gaussWeightMax = max(gaussWeight)
     for value in gaussWeight:
@@ -48,11 +46,11 @@ def GaussKeys(standardDeviation,average):
 width = 250
 if cmds.window("gaussValue",ex=1):
     cmds.deleteUI("gaussValue")
-cmds.window("gaussValue",w=wedth)
+cmds.window("gaussValue",w=width)
 cmds.columnLayout()
 cmds.text("standardDeviation")
 cmds.floatField("standardDeviationValue",w=width,v=10)
 cmds.text("average")
 cmds.floatField("averageValue",w=width,v=10)
-cmds.iconTextButton(c="GaussKeys(cmds.floatField(\"standardDeviationValue\",q=1,v=1),cmds.floatField(\"averageValue\",q=1,v=1))",style="textOnly",w=wedth,l="run",rpt=1)
+cmds.iconTextButton(c="GaussKeys(cmds.floatField(\"standardDeviationValue\",q=1,v=1),cmds.floatField(\"averageValue\",q=1,v=1))",style="textOnly",w=width,l="run",rpt=1)
 cmds.showWindow("gaussValue")
