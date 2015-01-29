@@ -22,6 +22,7 @@ def AdjutmentKeys_removeFunc():
     else:
         cmds.error("please select node")
 
+#UI作成
 width = 170
 sFrame = cmds.playbackOptions(q=1,min=1)
 eFrame = cmds.playbackOptions(q=1,max=1)
@@ -35,12 +36,13 @@ cmds.text("startFrame",w=width,l="Start")
 cmds.floatField("AdjutmentKeys_StartFrame",w=width,v=0)
 cmds.text("EndFrame",w=width,l="End")
 cmds.floatField("AdjutmentKeys_EndFrame",w=width,v=0)
-cmds.button("AdjutmentKeys_removeRunButton",l="run",c="AdjutmentKeys_removeFunc()",w=width)
+cmds.button("AdjutmentKeys_removeRunButton",l="Edit",c="AdjutmentKeys_removeFunc()",w=width)
 cmds.text(l="")
+cmds.text(l="move keys",w=width)
 cmds.radioCollection()
 cmds.radioButton("AdjutmentKeys_moveFrame_add",l="forward",sl=1)
 cmds.radioButton("AdjutmentKeys_moveFrame_remove",l="back")
 cmds.radioButton("AdjutmentKeys_moveFrame_start",l="replace start frame")
 cmds.floatField("AdjutmentKeys_AdjustmentValue",w=width,v=0)
-cmds.button("AdjutmentKeys_moveRunButton",l="run",c="AdjutmentKeys_moveFunc()",w=width)
+cmds.button("AdjutmentKeys_moveRunButton",l="Edit",c="AdjutmentKeys_moveFunc()",w=width)
 cmds.showWindow("AdjutmentKeys")
