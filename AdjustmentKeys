@@ -1,24 +1,24 @@
 import maya.cmds as cmds
-def AdjutmentKeys_moveFunc():
+def AdjustmentKeys_moveFunc():
     if cmds.ls(sl=1) != []:
-        if cmds.radioButton("AdjutmentKeys_moveFrame_add",q=1,sl=1):
-            value = cmds.floatField("AdjutmentKeys_AdjustmentValue",q=1,v=1)
+        if cmds.radioButton("AdjustmentKeys_moveFrame_add",q=1,sl=1):
+            value = cmds.floatField("AdjustmentKeys_AdjustmentValue",q=1,v=1)
             cmds.keyframe(e=1,a=0,r=1,tc=value)
-        if cmds.radioButton("AdjutmentKeys_moveFrame_remove",q=1,sl=1):
-            value = cmds.floatField("AdjutmentKeys_AdjustmentValue",q=1,v=1)
+        if cmds.radioButton("AdjustmentKeys_moveFrame_remove",q=1,sl=1):
+            value = cmds.floatField("AdjustmentKeys_AdjustmentValue",q=1,v=1)
             cmds.keyframe(e=1,a=0,r=1,tc=value*-1)
-        if cmds.radioButton("AdjutmentKeys_moveFrame_start",q=1,sl=1):
-            value = cmds.floatField("AdjutmentKeys_AdjustmentValue",q=1,v=1)
+        if cmds.radioButton("AdjustmentKeys_moveFrame_start",q=1,sl=1):
+            value = cmds.floatField("AdjustmentKeys_AdjustmentValue",q=1,v=1)
             DifferenceValue = min(cmds.keyframe(q=1,tc=1))-value
             cmds.keyframe(e=1,a=0,r=1,tc=DifferenceValue*-1)
     else:
         cmds.error("please select node")
         
 
-def AdjutmentKeys_removeFunc():
+def AdjustmentKeys_removeFunc():
     if cmds.ls(sl=1) != []:
-        if cmds.floatField("AdjutmentKeys_EndFrame",q=1,v=1)-cmds.floatField("AdjutmentKeys_StartFrame",q=1,v=1) != 0:
-            cmds.cutKey(time=(cmds.floatField("AdjutmentKeys_StartFrame",q=1,v=1),cmds.floatField("AdjutmentKeys_EndFrame",q=1,v=1)))
+        if cmds.floatField("AdjustmentKeys_EndFrame",q=1,v=1)-cmds.floatField("AdjustmentKeys_StartFrame",q=1,v=1) != 0:
+            cmds.cutKey(time=(cmds.floatField("AdjustmentKeys_StartFrame",q=1,v=1),cmds.floatField("AdjustmentKeys_EndFrame",q=1,v=1)))
     else:
         cmds.error("please select node")
 
@@ -26,23 +26,23 @@ def AdjutmentKeys_removeFunc():
 width = 170
 sFrame = cmds.playbackOptions(q=1,min=1)
 eFrame = cmds.playbackOptions(q=1,max=1)
-if cmds.window("AdjutmentKeys",ex=1):
-    cmds.deleteUI("AdjutmentKeys")
-cmds.window("AdjutmentKeys",t="Adjutment Keys",w=width,s=0)
+if cmds.window("AdjustmentKeys",ex=1):
+    cmds.deleteUI("AdjustmentKeys")
+cmds.window("AdjustmentKeys",t="Adjustment Keys",w=width,s=0)
 cmds.columnLayout()
 cmds.text(l="removeAdjustment",w=width)
 cmds.text(l="")
 cmds.text("startFrame",w=width,l="Start")
-cmds.floatField("AdjutmentKeys_StartFrame",w=width,v=0)
+cmds.floatField("AdjustmentKeys_StartFrame",w=width,v=0)
 cmds.text("EndFrame",w=width,l="End")
-cmds.floatField("AdjutmentKeys_EndFrame",w=width,v=0)
-cmds.button("AdjutmentKeys_removeRunButton",l="Edit",c="AdjutmentKeys_removeFunc()",w=width)
+cmds.floatField("AdjustmentKeys_EndFrame",w=width,v=0)
+cmds.button("AdjustmentKeys_removeRunButton",l="Edit",c="AdjustmentKeys_removeFunc()",w=width)
 cmds.text(l="")
 cmds.text(l="move keys",w=width)
 cmds.radioCollection()
-cmds.radioButton("AdjutmentKeys_moveFrame_add",l="forward",sl=1)
-cmds.radioButton("AdjutmentKeys_moveFrame_remove",l="back")
-cmds.radioButton("AdjutmentKeys_moveFrame_start",l="replace start frame")
-cmds.floatField("AdjutmentKeys_AdjustmentValue",w=width,v=0)
-cmds.button("AdjutmentKeys_moveRunButton",l="Edit",c="AdjutmentKeys_moveFunc()",w=width)
-cmds.showWindow("AdjutmentKeys")
+cmds.radioButton("AdjustmentKeys_moveFrame_add",l="forward",sl=1)
+cmds.radioButton("AdjustmentKeys_moveFrame_remove",l="back")
+cmds.radioButton("AdjustmentKeys_moveFrame_start",l="replace start frame")
+cmds.floatField("AdjustmentKeys_AdjustmentValue",w=width,v=0)
+cmds.button("AdjustmentKeys_moveRunButton",l="Edit",c="AdjustmentKeys_moveFunc()",w=width)
+cmds.showWindow("AdjustmentKeys")
