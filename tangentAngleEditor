@@ -1,0 +1,29 @@
+import maya.cmds as cmds
+def TangentAngleEditFunc(angleValue,mode):
+    if cmds.keyframe(q=1,sl=1,tc=1) != None:
+        if mode == 1:
+            cmds.keyTangent(lock=0)
+            for CurveName in cmds.keyframe(q=1,name=1):
+                for selectFrame in cmds.keyframe (q=1,sl=1,tc=1):
+                    cmds.keyTangent(CurveName,e=1,a=1,t=(selectFrame,selectFrame),outAngle=angleValue)
+                    cmds.keyTangent(CurveName,e=1,a=1,t=(selectFrame,selectFrame),inAngle=angleValue)
+            cmds.keyTangent(lock=1)
+        elif mode == 2:
+            cmds.keyTangent(lock=0)
+            for CurveName in cmds.keyframe(q=1,name=1):
+                for selectFrame in cmds.keyframe (q=1,sl=1,tc=1):
+                    cmds.keyTangent(CurveName,e=1,a=1,t=(selectFrame,selectFrame),inAngle=angleValue)
+        elif mode == 3:
+            cmds.keyTangent(lock=0)
+            for CurveName in cmds.keyframe(q=1,name=1):
+                for selectFrame in cmds.keyframe (q=1,sl=1,tc=1):
+                    cmds.keyTangent(CurveName,e=1,a=1,t=(selectFrame,selectFrame),outAngle=angleValue)
+#UI作成
+if cmds.window("TangentAngleEditorWindow",q=1,ex=1):
+    cmds.deleteUI("TangentAngleEditorWindow")
+cmds.window("TangentAngleEditorWindow")
+cmds.columnLayout(adj=1)
+cmds.radioButtonGrp("TangentAngleEditorRadioButton",nrb=3,l1="double",l2="in",l3="out",cw3=[60,35,25],sl=1)
+cmds.floatSlider("TangentAngleEditorSlider",s=0.1,min=-90,max=90,dc="cmds.floatField(\"TangentAngleEditor_tangentValue\",e=1,v=cmds.floatSlider(\"TangentAngleEditorSlider\",q=1,v=1))\nTangentAngleEditFunc(cmds.floatField(\"TangentAngleEditor_tangentValue\",q=1,v=1),cmds.radioButtonGrp(\"TangentAngleEditorRadioButton\",q=1,sl=1))")
+cmds.floatField("TangentAngleEditor_tangentValue",cc="TangentAngleEditFunc(cmds.floatField(\"TangentAngleEditor_tangentValue\",q=1,v=1),cmds.radioButtonGrp(\"TangentAngleEditorRadioButton\",q=1,sl=1))")
+cmds.showWindow("TangentAngleEditorWindow")
