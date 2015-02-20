@@ -1,0 +1,11 @@
+import os
+import sys
+sys.path.append("C:/Users/sayama/Desktop/xlrd-0.9.3/")
+
+import xlrd
+book = xlrd.open_workbook("C:/Users/sayama/Desktop/test.xlsx")
+sheet_1 = book.sheet_by_index(0)
+for col in range(sheet_1.ncols):
+    print "----------------------------"
+    for row in range(sheet_1.nrows):
+        print sheet_1.cell(row,col).value
