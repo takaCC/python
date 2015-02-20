@@ -1,11 +1,58 @@
-import os
-import sys
-sys.path.append("C:/Users/sayama/Desktop/xlrd-0.9.3/")
+# -*- coding: utf-8 -*-
 
-import xlrd
-book = xlrd.open_workbook("C:/Users/sayama/Desktop/test.xlsx")
-sheet_1 = book.sheet_by_index(0)
-for col in range(sheet_1.ncols):
-    print "----------------------------"
-    for row in range(sheet_1.nrows):
-        print sheet_1.cell(row,col).value
+#win32comのMaya参考URL等
+"""
+http://www.geocities.jp/meir000/maya/index.html
+http://www.dfx.co.jp/dftalk/?p=1375
+http://giken.workarea.jp/cg/maya/scripts/maya-script-pyton-sendtops2.html
+https://sites.google.com/site/pythoncasestudy/home/pywin32kara-comwo-tsuka-tsu-te-excelwo-sousa-suru-houhou
+https://sites.google.com/site/pythoncasestudy/home/win32comdenoexcelde-jian-suosuru-shinomemo
+"""
+
+import sys
+import win32com.client
+
+#エクセルアプリケーションを作成
+app = win32com.client.Dispatch("Excel.Application")
+#エクセルを表示
+app.Visible = 1
+#エクセルファイルを開く
+wb = app.Workbooks.Open("C:/Users/sayama/Desktop/test.xlsx")
+#ワークシートを選択
+Sheet = wb.Worksheets(1)
+#インデックス変数を初期化
+i=1
+
+#行、列の格納用配列と、目的のセルを番号を格納する変数の宣言
+ColumnArray = []
+RowArray = []
+ColumnTarget = 0
+RowTarget = 0
+
+#空白セルが出るまで、1行目の列を全て配列に代入
+while True:
+    if Sheet.Cells(1,i).value == None:
+        break
+    else:
+        ColumnArray.append(Sheet.Cells(1,i).value)
+        i += 1
+#インデックスの初期化
+i=1
+#空白セルが出るまで、1列目の行を全て配列に代入
+while True:
+    if Sheet.Cells(i,1).value == None:
+        break
+    else:
+        RowArray.append(Sheet.Cells(i,1).value)
+        i += 1
+
+#指定した文字列と一致するするセルを取得
+ColumnTarget = ColumnArray.index("CH0050")+1
+RowTarget = RowArray.index("MOVE_N")+1
+
+#セルに文字を書き込む
+Sheet.Cells(ColumnTarget,RowTarget).value = "●"
+#強制上書きセーブ＆アプリケーションの終了
+wb.Save()
+wb.Close()
+app.quit()
