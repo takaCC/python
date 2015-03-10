@@ -1,0 +1,33 @@
+## -*- coding: utf-8 -*-
+import maya.cmds as cmds
+def animExport(filePath):
+    #選択したノードから、アニメーションを書き出し
+    try:
+        cmds.file(path,exportSelectedAnim=1,typ="mayaAscii",f=1)
+    except:
+        cmds.error("アニメーションファイルが書き出せませんでした")
+    #fileの行全てを格納する配列の作成
+    fileStr = []
+    #ファイルを読み込み専用で開く
+    f = open(path,"r")
+    #ファイルを行単位に分割し、connectAttrがある行で、アニメーションノード接続先のノード名に":"を追加する
+    for line in f:
+        if line.find("connectAttr") > -1:
+            fileStr.append(line.split(" ")[0]+" "+line.split(" ")[1]+" "+"\":"+line.split(" ")[2].split("\"")[1]+"\";\n")
+        else:
+            fileStr.append(line)
+    #ファイルを閉じる
+    f.close()
+    
+    #fileを書き込み専用で開く
+    f = open(path,"w")
+    #変換した文字列で、既存のファイルを置き換え
+    for work in fileStr:
+        f.write(work)
+    #ファイルを閉じる
+    f.close()
+
+
+path = cmds.fileDialog2(fileFilter="ma file(.ma)(*.ma)", dialogStyle=2,fileMode=0,okc="Save")[0]
+if path != None:
+    animExport(str(path))
