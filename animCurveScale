@@ -1,0 +1,85 @@
+## -*- coding: utf-8 -*-
+import maya.cmds as cmds
+def returnCurves():
+    indexArray = []
+    curves = cmds.keyframe(q=1,sl=1,n=1)
+    for work in curves:
+        indexArray.append(cmds.keyframe(work,q=1,sl=1,iv=1))
+    cmds.selectKey(cl=1)
+    i = 0
+    while i < len(indexArray):
+        for indexValue in indexArray[i]:
+            cmds.selectKey(curves[i],add=1,index=(indexValue,indexValue))
+        i += 1
+    return [curves,indexArray]
+
+#引数を渡して、キーを選択する関数。第一引数にカーブ名を、第二引数にインデックスの配列を渡す。
+def selectAddAnimCurve(curveName,indexData):
+    s = "cmds.selectKey(\""+curveName+"\",add=1,index=[("
+    for indexValue in indexData:
+        s += str(indexValue)+","+str(indexValue)+"),("
+    s += ")])"
+    s = s.replace(",()","")
+    eval(s)
+
+def AnimScale(mode,pivotValue,scaleValue):
+    frame = cmds.currentTime(q=1)
+    if cmds.keyframe(q=1,sl=1,n=1) != None:
+        curveArray = returnCurves()[0]
+        indexArray = returnCurves()[1]
+        #モードをframeにした場合
+        if mode == 1:
+            #cmds.currentTime(pivotValue,u=1)
+            i = 0
+            while i < len(curveArray):
+                cmds.selectKey(cl=1)
+                #アニメーションカーブの選択
+                selectAddAnimCurve(curveArray[i],indexArray[i])
+                pivot = cmds.getAttr(curveArray[i]+".output",t=pivotValue)
+                cmds.scaleKey(vs=scaleValue,vp=pivot)
+                i += 1
+            #cmds.currentTime(frame,u=1)
+        #モードを%にした場合
+        elif mode == 2:
+            i = 0
+            while i < len(indexArray):
+                cmds.selectKey(cl=1)
+                #アニメーションカーブの選択
+                selectAddAnimCurve(curveArray[i],indexArray[i])
+                #カーブの最小値と最大値から値の幅を取る
+                dist = max(cmds.keyframe(q=1,sl=1,vc=1))-min(cmds.keyframe(q=1,sl=1,vc=1))
+                #値の幅に割合を掛けたものを、最小値に足す。この数値がscalePivotになる。また、値は0.01倍する(100で100%にするため)
+                pivot = min(cmds.keyframe(q=1,sl=1,vc=1))+dist*pivotValue*0.01
+                cmds.scaleKey(vs=scaleValue,vp=pivot)
+                i += 1
+        elif mode == 3:
+            i = 0
+            while i < len(indexArray):
+                cmds.selectKey(cl=1)
+                #アニメーションカーブの選択
+                selectAddAnimCurve(curveArray[i],indexArray[i])
+                #スケールを実行
+                cmds.scaleKey(vs=scaleValue,vp=pivotValue)
+                i += 1
+        i = 0
+        while i < len(indexArray):
+            selectAddAnimCurve(curveArray[i],indexArray[i])
+            i += 1
+
+#UI構築
+if cmds.window("AnimScale",q=1,ex=1):
+    cmds.deleteUI("AnimScale")
+cmds.window("AnimScale",s=1,w=140)
+cmds.columnLayout(adj=1)
+#cmds.text("ピボット位置の基準")
+#cmds.text("------------------------------------------")
+#cmds.text("Pivot Mode")
+cmds.radioButtonGrp("AnimScale_Mode",nrb=3,labelArray3=["Frame","%","value"],sl=1,cw3=[65,40,65])
+#cmds.text("------------------------------------------")
+cmds.text("Pivot")
+cmds.floatField("AnimScale_pivotValue")
+#cmds.text("------------------------------------------")
+cmds.text("Value(スケールの割合)")
+cmds.floatField("AnimScale_scaleValue")
+cmds.button("AnimScale_Run",l="Run",c="AnimScale(cmds.radioButtonGrp(\"AnimScale_Mode\",q=1,sl=1),cmds.floatField(\"AnimScale_pivotValue\",q=1,v=1),cmds.floatField(\"AnimScale_scaleValue\",q=1,v=1))")
+cmds.showWindow("AnimScale")
