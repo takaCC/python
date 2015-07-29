@@ -1,0 +1,75 @@
+import maya.cmds as cmds
+def revCnst(rotateOrder,simMode):
+    #使い方：選択して実行
+    
+    #処理内容：選択したノードのアニメーション情報をロケーターに移し、
+    #そのロケータで逆にアニメーション元のノードにコンストレインかけるスクリプト
+    
+    #スタートとエンドのフレームを取得
+    StartFrame = cmds.playbackOptions(q=1,min=1)
+    EndFrame = cmds.playbackOptions(q=1,max=1)
+    #アクティブなパネルを取得
+    WfPanel = cmds.getPanel(wf=1)
+    WfPanelType = cmds.getPanel(to=WfPanel)
+    
+    #変数の初期化
+    SelArray = cmds.ls(sl=1,l=0)
+    LocArray = []
+    CnstArray = []
+    
+    #選択したノードをループ処理
+    for work in SelArray:
+        #選択したノード名の末尾に_locを付けてロケータを作成
+        loc = cmds.spaceLocator(n=work+"_loc")
+        cmds.setAttr(loc[0]+".rotateOrder",rotateOrder)
+        LocArray.append(cmds.ls(sl=1,l=1)[0])
+        #コンストレインを行う
+        cmds.select(work,loc)
+        cnst = cmds.parentConstraint()[0]
+        CnstArray.append(cnst)
+    
+    
+    cmds.select(LocArray)
+    #isolate selectionモードにして処理の負荷を低減させる
+    if WfPanelType == "modelPanel":
+    	cmds.isolateSelect(WfPanel,state=1)
+    
+    #ベイク処理を行う
+    if simMode == 1:
+        cmds.bakeResults(LocArray,simulation=1,t=(StartFrame,EndFrame))
+    else:
+        cmds.bakeResults(LocArray,simulation=0,t=(StartFrame,EndFrame))
+    
+    #コンストレインの削除
+    cmds.delete(CnstArray)
+    
+    #ビューの表示を元に戻す
+    if WfPanelType == "modelPanel":
+    	cmds.isolateSelect(WfPanel,state=0)
+    
+    for i in range(len(LocArray)):
+        #ポイントコンストレインを行う。この時処理が実行されなかったら、処理をスルーする
+        try:
+           cmds.pointConstraint(LocArray[i],SelArray[i])
+        except:
+           print "do not point constrain"
+        #オリエントコンストレインを行う。この時処理が実行されなかったら、処理をスルーする
+        try:
+           cmds.orientConstraint(LocArray[i],SelArray[i])
+        except:
+           print "do not orient constrain"
+width = 170
+if cmds.window("revCnstWindow",ex=1) == 1:
+    cmds.deleteUI("revCnstWindow")
+cmds.window("revCnstWindow",t="revCnst_Window",w=width)
+cmds.columnLayout(w=width)
+cmds.optionMenu("revCnstRotateOrder",l="rotateOrder",w=width)
+cmds.menuItem(p="revCnstRotateOrder",label="xyz")
+cmds.menuItem(p="revCnstRotateOrder",label="yzx")
+cmds.menuItem(p="revCnstRotateOrder",label="zxy")
+cmds.menuItem(p="revCnstRotateOrder",label="xzy")
+cmds.menuItem(p="revCnstRotateOrder",label="yxz")
+cmds.menuItem(p="revCnstRotateOrder",label="zyx")
+cmds.checkBox("revCnstSimMode",l="Do simlation?")
+cmds.button(l="run",w=width,c="revCnst(cmds.optionMenu(\"revCnstRotateOrder\",q=1,sl=1)-1,cmds.checkBox(\"revCnstSimMode\",q=1,v=1))")
+cmds.showWindow("revCnstWindow")
