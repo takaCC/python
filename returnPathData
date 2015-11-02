@@ -1,0 +1,15 @@
+def returnPathData(path,mode):
+    returnList = []
+    if mode == "files":
+        for dpath,dirs,fnames in os.walk(path):
+            for fname in fnames:
+                returnList.append(fname)
+    elif mode == "dirs":
+        for dpath,dirs,fnames in os.walk(path):
+            for dir in dirs:
+                returnList.append(dir)
+    elif mode == "paths":
+        for dpath,dirs,fnames in os.walk(path):
+            for fname in fnames:
+                returnList.append(dpath+fname)
+    return returnList
