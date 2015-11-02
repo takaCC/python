@@ -8,8 +8,12 @@ def returnPathData(path,mode):
         for dpath,dirs,fnames in os.walk(path):
             for dir in dirs:
                 returnList.append(dir)
-    elif mode == "paths":
+    elif mode == "filePaths":
         for dpath,dirs,fnames in os.walk(path):
             for fname in fnames:
                 returnList.append(dpath+fname)
+    elif mode == "dirPaths":
+        for dpath,dirs,fnames in os.walk(path):
+            for dir in dirs:
+                returnList.append(dpath+dir+"/")
     return returnList
