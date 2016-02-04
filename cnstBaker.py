@@ -43,10 +43,11 @@ def cnstBaker():
     #コンストの張ってあるノードを取得
     ConstList = []
     for sel in cmds.ls(sl=1,fl=1,l=1):
-        for child in cmds.listRelatives(sel,c=1,f=1):
-            type = cmds.objectType(child)
-            if type.find("Constraint") > 0:
-                ConstList.append(sel)
+        if cmds.listRelatives(sel,c=1,f=1):
+            for child in cmds.listRelatives(sel,c=1,f=1):
+                type = cmds.objectType(child)
+                if type.find("Constraint") > 0:
+                    ConstList.append(sel)
     
     #コンストの張ってあるノードをベイク処理
     if len(ConstList) > 0:
