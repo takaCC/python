@@ -19,7 +19,7 @@ def smartBake_TEST():
     
     #------------------------ベイク処理----------------------------------
     for work in cmds.ls(sl=1,l=1):
-        Sel_Attr = [[[cmds.getAttr(work+".tx",t=frame),cmds.getAttr(work+".ty",t=frame),cmds.getAttr(work+".tz",t=frame)],[cmds.getAttr(work+".rx",t=frame),cmds.getAttr(work+".ry",t=frame),cmds.getAttr(work+".rz",t=frame)]] for frame in range(minFrame,maxFrame)]
+        Sel_Attr = [[[cmds.getAttr(work+".tx",t=frame),cmds.getAttr(work+".ty",t=frame),cmds.getAttr(work+".tz",t=frame)],[cmds.getAttr(work+".rx",t=frame),cmds.getAttr(work+".ry",t=frame),cmds.getAttr(work+".rz",t=frame)]] for frame in range(minFrame,maxFrame+1)]
         
         for frame in range(minFrame,maxFrame+1):
             cmds.setKeyframe(work+".tx",t=frame,v=Sel_Attr[frame][0][0])
