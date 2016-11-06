@@ -1,3 +1,3 @@
 import maya.cmds as cmds
 import maya.mel as mel
-cmds.file(mel.eval("optionVar -query \"RecentFilesList\"")[3],o=1,f=1)
+cmds.file(mel.eval("optionVar -query \"RecentFilesList\"")[-1],o=1,f=1)
