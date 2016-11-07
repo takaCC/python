@@ -1,0 +1,6 @@
+#現在フォーカスされているmodelPanelが全modelPanelの中に含まれるやつなら
+if cmds.getPanel(wf=1) in cmds.getPanel(type="modelPanel"):
+    if cmds.modelEditor(cmds.getPanel(wf=1),q=1,nurbsCurves=1) == True:
+        cmds.modelEditor(cmds.getPanel(wf=1),e=1,nurbsCurves=0)
+    else:
+        cmds.modelEditor(cmds.getPanel(wf=1),e=1,nurbsCurves=1)
