@@ -1,0 +1,106 @@
+## -*- coding: utf-8 -*-
+import maya.cmds as cmds
+import Script
+from Script.smartBake import smartBake
+from Script.delConst import delConst
+
+
+#選択したものに対して、様々なロケータを作成するクラス
+
+#使用例
+#    selLoc().cnst("long")
+#    selLoc().bake("short")
+#    selLoc().lock("short")
+#    selLoc().add("long")
+
+class selLoc():
+    def __init__(self):
+        True
+    #コンスト付きでロケータを作成
+    def cnst(self,type):
+        self.type = type
+        LocArray = []
+        if self.type == "long":
+            sel = cmds.ls(sl=1,l=1)
+        elif self.type == "short":
+            sel = cmds.ls(sl=1)
+        for work in sel:
+            loc = cmds.spaceLocator(n=work+"_loc")[0]
+            cmds.select(work,loc)
+            cnst = cmds.parentConstraint()
+            cmds.select(loc)
+            LocArray.append(loc)
+        return LocArray
+    #コンスト付きでロケータを作成
+    def bake(self,type):
+        self.type = type
+        LocArray = []
+        if self.type == "long":
+            sel = cmds.ls(sl=1,l=1)
+        elif self.type == "short":
+            sel = cmds.ls(sl=1)
+        for work in sel:
+            loc = cmds.spaceLocator(n=work+"_loc")[0]
+            cmds.select(work,loc)
+            cnst = cmds.parentConstraint()
+            cmds.select(loc)
+            LocArray.append(loc)
+        cmds.select(LocArray)
+        smartBake()
+        delConst()
+        return LocArray
+    #ロケータで逆コンストする
+    def lock(self,type):
+        self.type = type
+        
+        if self.type == "long":
+            sel = cmds.ls(sl=1,l=1)
+        elif self.type == "short":
+            sel = cmds.ls(sl=1)
+        
+        #変数の初期化
+        LocArray = []
+        CnstArray = []
+        
+        #選択したノードをループ処理
+        for work in sel:
+            #選択したノード名の末尾に_locを付けてロケータを作成
+            loc = cmds.spaceLocator(n=work+"_loc")[0]
+            LocArray.append(cmds.ls(sl=1,l=1)[0])
+            #コンストレインを行う
+            cmds.select(work,loc)
+            cnst = cmds.parentConstraint()[0]
+            CnstArray.append(cnst)
+        
+        cmds.select(LocArray)
+        smartBake()
+        delConst()
+        return LocArray
+        
+        for i in range(len(LocArray)):
+            #ポイントコンストレインを行う。この時処理が実行されなかったら、処理をスルーする
+            try:
+               cmds.pointConstraint(LocArray[i],SelArray[i])
+            except:
+               print "do not point constrain"
+            #オリエントコンストレインを行う。この時処理が実行されなかったら、処理をスルーする
+            try:
+               cmds.orientConstraint(LocArray[i],SelArray[i])
+            except:
+               print "do not orient constrain"
+    #選択したノードの位置にロケータを作成する
+    def add(self,type):
+        self.type = type
+        LockArray = []
+        if self.type == "long":
+            sel = cmds.ls(sl=1,l=1)
+        elif self.type == "short":
+            sel = cmds.ls(sl=1)
+        for work in sel:
+            loc = cmds.spaceLocator(n=work+"_loc")[0]
+            cmds.select(work,loc)
+            cnst = cmds.parentConstraint()
+            cmds.select(loc)
+            cmds.delete(cnst)
+            LockArray.append(loc)
+        return LockArray
