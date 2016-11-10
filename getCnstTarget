@@ -1,0 +1,47 @@
+## -*- coding:utf-8 -*-
+import maya.cmds as cmds
+
+#コンストのコントロール先を取得＆選択する関数(選択するかどうかは引数で指定できる)
+def getCnstTarget(selection=True):
+    
+    selList = cmds.ls(sl=1)
+    cnst = cmds.listConnections(selList,s=0,d=1,type="constraint")
+    targetList = []
+    
+    cmds.select(cl=1)
+    #コンスと選択
+    for work in cnst:
+        cmds.select(work,add=1)
+    
+    #コンストのタイプを取得
+    for work in cmds.ls(sl=1):
+        #コンストに接続されている一覧を取得
+        checkList = list(set(cmds.listConnections(work,s=1,d=0)))
+        
+        #コンストのコマンドから得られるターゲット(動かす側)のリストを取得する配列
+        cnstTargetList = []
+        
+        if cmds.objectType(work) == "pointConstraint":
+            for node in cmds.pointConstraint(work,q=1,tl=1):
+                cnstTargetList.append(node)
+        elif cmds.objectType(work) == "orientConstraint":
+            for node in cmds.orientConstraint(work,q=1,tl=1):
+                cnstTargetList.append(node)
+        elif cmds.objectType(work) == "parentConstraint":
+            for node in cmds.parentConstraint(work,q=1,tl=1):
+                cnstTargetList.append(node)
+        else:
+            cmds.warning("not support")
+        #コンストノードに接続されているブツをループ処理
+        for node in checkList:
+            #調べるノード自身じゃないか？を判定
+            if not node in selList:
+                #コンストレインノード自身でじゃないか？を判定
+                if node != work:
+                    #動かす側のノード一覧に含まれていないか？を判定
+                    if not node in cnstTargetList:
+                        #コンスとノード自身でもなく、動かす側のノードでもない場合、残るのは動かされる側のノードになるため、リストに入れる
+                        targetList.append(node)
+    if selection:
+        cmds.select(targetList)
+    return targetList
