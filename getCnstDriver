@@ -1,0 +1,33 @@
+## -*- coding:utf-8 -*-
+import maya.cmds as cmds
+
+def getCnstDriver(selection=True):
+    #コンストのコントロール先を取得＆選択する関数(選択するかどうかは引数で指定できる)
+    selList = cmds.ls(sl=1)
+    cnst = cmds.listConnections(selList,s=0,d=1,type="constraint")
+    cmds.select(cl=1)
+    
+    if cnst != None:
+        #コンスと選択
+        for work in cnst:
+            cmds.select(work,add=1)
+    
+    if len(cmds.ls(sl=1)):
+        cnstTargetList = []
+        #コンストのタイプを取得
+        for work in cmds.ls(sl=1):
+            #コンストのコマンドから得られるターゲット(動かす側)のリストを取得する配列
+            
+            if cmds.objectType(work) == "pointConstraint":
+                for node in cmds.pointConstraint(work,q=1,tl=1):
+                    cnstTargetList.append(node)
+            elif cmds.objectType(work) == "orientConstraint":
+                for node in cmds.orientConstraint(work,q=1,tl=1):
+                    cnstTargetList.append(node)
+            elif cmds.objectType(work) == "parentConstraint":
+                for node in cmds.parentConstraint(work,q=1,tl=1):
+                    cnstTargetList.append(node)
+    cmds.select(cl=1)
+    if selection:
+        cmds.select(cnstTargetList)
+    return cnstTargetList
