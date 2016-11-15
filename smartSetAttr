@@ -1,0 +1,61 @@
+import maya.mel as mel
+
+def smartSetKey(start,end):
+    cmd = """
+    global proc string[] selectedChannelBoxAttributes()
+    {
+    	global 	string $gChannelBoxName; 
+    
+    	string  $result[];
+    
+    	if( `channelBox -q -exists $gChannelBoxName` ) {
+    		string 	$main[];
+    		string 	$shape[];
+    		string 	$history[];
+    		string  $outputs[];
+    		
+    		$main = `channelBox -q -selectedMainAttributes $gChannelBoxName`;
+    		$shape = `channelBox -q -selectedShapeAttributes $gChannelBoxName`;
+    		$history = `channelBox -q -selectedHistoryAttributes $gChannelBoxName`;
+    		$outputs = `channelBox -q -selectedOutputAttributes $gChannelBoxName`;
+    		
+    		string  $attr;
+    		
+    		for( $attr in $main ) {
+    			$result[ size($result) ] = $attr;
+    		}
+    		for( $attr in $shape ) {
+    			$result[ size($result) ] = $attr;
+    		}
+    		for( $attr in $history ) {
+    			$result[ size($result) ] = $attr;
+    		}
+    		for( $attr in $outputs ) {
+    			$result[ size($result) ] = $attr;
+    		}
+    	}
+    		
+    	return $result;
+    }
+    
+    """
+    
+    mel.eval(cmd)
+    attr = mel.eval("selectedChannelBoxAttributes()")
+    frame = range(start,end)
+    if len(attr):
+        cmds.setKeyframe(time = frame,attribute=attr)
+    else:
+        cmds.setKeyframe(time = frame)
+
+smartSetKey(start = 0,end = 50)
+
+blendAttrCheck = 0
+
+for attr in cmds.listAttr(cmds.ls(sl=1),k=1,u=1,se=1):
+    if attr.find("blendParent") != -1:
+        blendAttrCheck = 1
+    elif attr.find("blendPoint") != -1:
+        blendAttrCheck = 1
+    elif attr.find("blendOrient") != -1:
+        blendAttrCheck = 1
